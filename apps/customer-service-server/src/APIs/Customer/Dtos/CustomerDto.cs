@@ -8,4 +8,5 @@ public class CustomerDto
     public ICollection<FeedbackDto>? Feedbacks { get; set; }
     public ServiceRequestDto ServiceRequestId { get; set; }
     public string? Address { get; set; }
+    public string? NewField { get; set; }
 }
