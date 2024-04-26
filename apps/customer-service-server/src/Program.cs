@@ -13,8 +13,8 @@ builder.Services.AddControllers();
 builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
 // Add services to the container.
-builder.Services.AddScoped<ICustomersService, CustomersService>();
 builder.Services.AddScoped<IServiceRequestsService, ServiceRequestsService>();
+builder.Services.AddScoped<ICustomersService, CustomersService>();
 builder.Services.AddScoped<IServiceTicketsService, ServiceTicketsService>();
 builder.Services.AddScoped<IFeedbacksService, FeedbacksService>();
 

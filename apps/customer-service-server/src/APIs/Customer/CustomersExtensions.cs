@@ -20,6 +20,7 @@ public static class CustomersExtensions
             ServiceRequests = model.ServiceRequests.Select(x => x.ToDto()).ToList(),
             Address = model.Address,
             NewField = model.NewField,
+            Nn = model.Nn,
         };
     }
 }
