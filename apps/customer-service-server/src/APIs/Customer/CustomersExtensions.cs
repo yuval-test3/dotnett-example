@@ -19,6 +19,8 @@ public static class CustomersExtensions
             Feedbacks = model.Feedbacks.Select(x => x.ToDto()).ToList(),
             ServiceRequests = model.ServiceRequests.Select(x => x.ToDto()).ToList(),
             Address = model.Address,
+            NewField = model.NewField,
+            Nn = model.Nn,
         };
     }
 }

@@ -31,4 +31,8 @@ public class Customer
     public ServiceRequest? ServiceRequest { get; set; }
 
     public string? Address { get; set; }
+
+    public string? NewField { get; set; }
+
+    public string? Nn { get; set; }
 }
