@@ -23,4 +23,6 @@ public class Feedback
 
     [ForeignKey(nameof(CustomerId))]
     public Customer? Customer { get; set; }
+
+    public string? Comment { get; set; }
 }
