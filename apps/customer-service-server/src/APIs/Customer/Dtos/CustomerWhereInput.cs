@@ -10,4 +10,5 @@ public class CustomerWhereInput
     public string? Address { get; set; }
     public string? NewField { get; set; }
     public string? Nn { get; set; }
+    public string? Phone_2 { get; set; }
 }

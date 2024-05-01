@@ -35,4 +35,6 @@ public class Customer
     public string? NewField { get; set; }
 
     public string? Nn { get; set; }
+
+    public string? Phone_2 { get; set; }
 }
