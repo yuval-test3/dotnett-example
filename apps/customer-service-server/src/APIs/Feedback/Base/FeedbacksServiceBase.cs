@@ -23,6 +23,19 @@ public abstract class FeedbacksServiceBase : IFeedbacksService
         return _context.Feedbacks.Any(e => e.Id == id);
     }
 
+    public async Task DeleteFeedback(string id)
+    {
+        var feedback = await _context.feedbacks.FindAsync(id);
+
+        if (feedback == null)
+        {
+            throw new NotFoundException();
+        }
+
+        _context.feedbacks.Remove(feedback);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<FeedbackDto> CreateFeedback(FeedbackCreateInput inputDto)
     {
         var model = new Feedback { Id = inputDto.Id, Name = inputDto.Name, };
@@ -37,31 +50,6 @@ public abstract class FeedbacksServiceBase : IFeedbacksService
         }
 
         return result.ToDto();
-    }
-
-    public async Task DeleteFeedback(string id)
-    {
-        var feedback = await _context.feedbacks.FindAsync(id);
-
-        if (feedback == null)
-        {
-            throw new NotFoundException();
-        }
-
-        _context.feedbacks.Remove(feedback);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<FeedbackDto>> feedbacks(FeedbackFindMany findManyArgs)
-    {
-        var feedbacks = await _context
-            .feedbacks.ApplyWhere(findManyArgs.Where)
-            .ApplySkip(findManyArgs.Skip)
-            .ApplyTake(findManyArgs.Take)
-            .ApplyOrderBy(findManyArgs.SortBy)
-            .ToListAsync();
-
-        return feedbacks.ConvertAll(feedback => feedback.ToDto());
     }
 
     public async Task UpdateFeedback(string id, FeedbackDto feedbackDto)
@@ -85,5 +73,17 @@ public abstract class FeedbacksServiceBase : IFeedbacksService
                 throw;
             }
         }
+    }
+
+    public async Task<IEnumerable<FeedbackDto>> feedbacks(FeedbackFindMany findManyArgs)
+    {
+        var feedbacks = await _context
+            .feedbacks.ApplyWhere(findManyArgs.Where)
+            .ApplySkip(findManyArgs.Skip)
+            .ApplyTake(findManyArgs.Take)
+            .ApplyOrderBy(findManyArgs.SortBy)
+            .ToListAsync();
+
+        return feedbacks.ConvertAll(feedback => feedback.ToDto());
     }
 }

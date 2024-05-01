@@ -14,4 +14,6 @@ public class CustomerServiceManagementContext : DbContext
     public DbSet<Customer> Customers { get; set; } = null!;
     public DbSet<ServiceTicket> ServiceTickets { get; set; } = null!;
     public DbSet<Feedback> Feedbacks { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<Product> Products { get; set; } = null!;
 }

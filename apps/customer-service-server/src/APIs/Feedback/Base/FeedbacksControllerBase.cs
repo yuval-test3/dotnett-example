@@ -16,13 +16,6 @@ public class FeedbacksControllerBase : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<FeedbackDto>> CreateFeedback(FeedbackCreateInput input)
-    {
-        var dto = await _service.CreateFeedback(input);
-        return CreatedAtAction(nameof(Feedback), new { id = dto.Id }, dto);
-    }
-
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFeedback(string id)
     {
@@ -38,10 +31,11 @@ public class FeedbacksControllerBase : ControllerBase
         return NoContent();
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<FeedbackDto>>> Feedbacks()
+    [HttpPost]
+    public async Task<ActionResult<FeedbackDto>> CreateFeedback(FeedbackCreateInput input)
     {
-        return Ok(await _service.feedbacks());
+        var dto = await _service.CreateFeedback(input);
+        return CreatedAtAction(nameof(Feedback), new { id = dto.Id }, dto);
     }
 
     [HttpPatch("{id}")]
@@ -62,5 +56,11 @@ public class FeedbacksControllerBase : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> Feedbacks()
+    {
+        return Ok(await _service.feedbacks());
     }
 }

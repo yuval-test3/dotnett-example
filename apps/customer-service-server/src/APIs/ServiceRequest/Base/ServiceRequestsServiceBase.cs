@@ -23,143 +23,31 @@ public abstract class ServiceRequestsServiceBase : IServiceRequestsService
         return _context.ServiceRequests.Any(e => e.Id == id);
     }
 
-    public async Task<ServiceRequestDto> CreateServiceRequest(ServiceRequestCreateInput inputDto)
+    public async Task UpdateServiceRequest(string id, ServiceRequestDto serviceRequestDto)
     {
-        var model = new ServiceRequest { Id = inputDto.Id, Name = inputDto.Name, };
-        _context.serviceRequests.Add(model);
-        await _context.SaveChangesAsync();
-
-        var result = await _context.FindAsync<ServiceRequest>(model.Id);
-
-        if (result == null)
+        var serviceRequest = new ServiceRequest
         {
-            throw new NotFoundException();
-        }
+            Id = serviceRequestDto.Id,
+            Name = serviceRequestDto.Name,
+        };
 
-        return result.ToDto();
-    }
+        _context.Entry(serviceRequest).State = EntityState.Modified;
 
-    public async Task DeleteServiceRequest(string id)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-
-        if (serviceRequest == null)
+        try
         {
-            throw new NotFoundException();
+            await _context.SaveChangesAsync();
         }
-
-        _context.serviceRequests.Remove(serviceRequest);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<ServiceRequestDto>> serviceRequests(
-        ServiceRequestFindMany findManyArgs
-    )
-    {
-        var serviceRequests = await _context
-            .serviceRequests.ApplyWhere(findManyArgs.Where)
-            .ApplySkip(findManyArgs.Skip)
-            .ApplyTake(findManyArgs.Take)
-            .ApplyOrderBy(findManyArgs.SortBy)
-            .ToListAsync();
-
-        return serviceRequests.ConvertAll(serviceRequest => serviceRequest.ToDto());
-    }
-
-    public async Task ConnectServiceTicket(string id, [Required] string serviceTicketId)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
+        catch (DbUpdateConcurrencyException)
         {
-            throw new NotFoundException();
+            if (!ServiceRequestExists(id))
+            {
+                throw new NotFoundException();
+            }
+            else
+            {
+                throw;
+            }
         }
-
-        var serviceTicket = await _context.serviceTickets.FindAsync(serviceTicketId);
-        if (serviceTicket == null)
-        {
-            throw new NotFoundException();
-        }
-
-        serviceRequest.serviceTickets.Add(serviceTicket);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task ConnectCustomer(string id, [Required] string customerId)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var customer = await _context.customers.FindAsync(customerId);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        serviceRequest.customers.Add(customer);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DisconnectServiceTicket(string id, [Required] string serviceTicketId)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var serviceTicket = await _context.serviceTickets.FindAsync(serviceTicketId);
-        if (serviceTicket == null)
-        {
-            throw new NotFoundException();
-        }
-
-        serviceRequest.serviceTickets.Remove(serviceTicket);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DisconnectCustomer(string id, [Required] string customerId)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var customer = await _context.customers.FindAsync(customerId);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        serviceRequest.customers.Remove(customer);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<ServiceTicketDto>> ServiceTickets(string id)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        return serviceRequest
-            .ServiceTickets.Select(serviceTicket => serviceTicket.ToDto())
-            .ToList();
-    }
-
-    public async Task<IEnumerable<CustomerDto>> Customers(string id)
-    {
-        var serviceRequest = await _context.serviceRequests.FindAsync(id);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        return serviceRequest.Customers.Select(customer => customer.ToDto()).ToList();
     }
 
     public async Task UpdateServiceTickets(
@@ -209,30 +97,142 @@ public abstract class ServiceRequestsServiceBase : IServiceRequestsService
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateServiceRequest(string id, ServiceRequestDto serviceRequestDto)
+    public async Task<ServiceRequestDto> CreateServiceRequest(ServiceRequestCreateInput inputDto)
     {
-        var serviceRequest = new ServiceRequest
-        {
-            Id = serviceRequestDto.Id,
-            Name = serviceRequestDto.Name,
-        };
+        var model = new ServiceRequest { Id = inputDto.Id, Name = inputDto.Name, };
+        _context.serviceRequests.Add(model);
+        await _context.SaveChangesAsync();
 
-        _context.Entry(serviceRequest).State = EntityState.Modified;
+        var result = await _context.FindAsync<ServiceRequest>(model.Id);
 
-        try
+        if (result == null)
         {
-            await _context.SaveChangesAsync();
+            throw new NotFoundException();
         }
-        catch (DbUpdateConcurrencyException)
+
+        return result.ToDto();
+    }
+
+    public async Task DisconnectServiceTicket(string id, [Required] string serviceTicketId)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
         {
-            if (!ServiceRequestExists(id))
-            {
-                throw new NotFoundException();
-            }
-            else
-            {
-                throw;
-            }
+            throw new NotFoundException();
         }
+
+        var serviceTicket = await _context.serviceTickets.FindAsync(serviceTicketId);
+        if (serviceTicket == null)
+        {
+            throw new NotFoundException();
+        }
+
+        serviceRequest.serviceTickets.Remove(serviceTicket);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DisconnectCustomer(string id, [Required] string customerId)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var customer = await _context.customers.FindAsync(customerId);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        serviceRequest.customers.Remove(customer);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<ServiceRequestDto>> serviceRequests(
+        ServiceRequestFindMany findManyArgs
+    )
+    {
+        var serviceRequests = await _context
+            .serviceRequests.ApplyWhere(findManyArgs.Where)
+            .ApplySkip(findManyArgs.Skip)
+            .ApplyTake(findManyArgs.Take)
+            .ApplyOrderBy(findManyArgs.SortBy)
+            .ToListAsync();
+
+        return serviceRequests.ConvertAll(serviceRequest => serviceRequest.ToDto());
+    }
+
+    public async Task DeleteServiceRequest(string id)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        _context.serviceRequests.Remove(serviceRequest);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ConnectServiceTicket(string id, [Required] string serviceTicketId)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var serviceTicket = await _context.serviceTickets.FindAsync(serviceTicketId);
+        if (serviceTicket == null)
+        {
+            throw new NotFoundException();
+        }
+
+        serviceRequest.serviceTickets.Add(serviceTicket);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ConnectCustomer(string id, [Required] string customerId)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var customer = await _context.customers.FindAsync(customerId);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        serviceRequest.customers.Add(customer);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<ServiceTicketDto>> ServiceTickets(string id)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        return serviceRequest
+            .ServiceTickets.Select(serviceTicket => serviceTicket.ToDto())
+            .ToList();
+    }
+
+    public async Task<IEnumerable<CustomerDto>> Customers(string id)
+    {
+        var serviceRequest = await _context.serviceRequests.FindAsync(id);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        return serviceRequest.Customers.Select(customer => customer.ToDto()).ToList();
     }
 }

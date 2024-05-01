@@ -16,102 +16,6 @@ public class CustomersControllerBase : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<CustomerDto>> CreateCustomer(CustomerCreateInput input)
-    {
-        var dto = await _service.CreateCustomer(input);
-        return CreatedAtAction(nameof(Customer), new { id = dto.Id }, dto);
-    }
-
-    [HttpPost("{id}/feedbacks")]
-    public async Task<IActionResult> ConnectCustomer(string id, [Required] string FeedbackId)
-    {
-        try
-        {
-            await _service.ConnectFeedback(id, CustomerId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpPost("{id}/serviceRequests")]
-    public async Task<IActionResult> ConnectCustomer(string id, [Required] string ServiceRequestId)
-    {
-        try
-        {
-            await _service.ConnectServiceRequest(id, CustomerId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}/feedbacks")]
-    public async Task<IActionResult> DisconnectCustomer(string id, [Required] string FeedbackId)
-    {
-        try
-        {
-            await _service.DisconnectFeedback(id, CustomerId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}/serviceRequests")]
-    public async Task<IActionResult> DisconnectCustomer(
-        string id,
-        [Required] string ServiceRequestId
-    )
-    {
-        try
-        {
-            await _service.DisconnectServiceRequest(id, CustomerId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpGet("{id}/feedbacks")]
-    public async Task<IActionResult> Feedbacks(string id)
-    {
-        try
-        {
-            return Ok(await _service.Feedbacks(id));
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpGet("{id}/serviceRequests")]
-    public async Task<IActionResult> ServiceRequests(string id)
-    {
-        try
-        {
-            return Ok(await _service.ServiceRequests(id));
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
     [HttpPatch("{id}/feedbacks")]
     public async Task<IActionResult> UpdateFeedback(
         [FromRoute] CustomerIdDto idDto,
@@ -163,10 +67,66 @@ public class CustomersControllerBase : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("{id}/feedbacks")]
+    public async Task<IActionResult> Feedbacks(string id)
+    {
+        try
+        {
+            return Ok(await _service.Feedbacks(id));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("{id}/serviceRequests")]
+    public async Task<IActionResult> ServiceRequests(string id)
+    {
+        try
+        {
+            return Ok(await _service.ServiceRequests(id));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CustomerDto>>> Customers()
     {
         return Ok(await _service.customers());
+    }
+
+    [HttpPost("{id}/feedbacks")]
+    public async Task<IActionResult> ConnectCustomer(string id, [Required] string FeedbackId)
+    {
+        try
+        {
+            await _service.ConnectFeedback(id, CustomerId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("{id}/serviceRequests")]
+    public async Task<IActionResult> ConnectCustomer(string id, [Required] string ServiceRequestId)
+    {
+        try
+        {
+            await _service.ConnectServiceRequest(id, CustomerId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 
     [HttpPatch("{id}")]
@@ -180,6 +140,46 @@ public class CustomersControllerBase : ControllerBase
         try
         {
             await _service.UpdateCustomer(id, customerDto);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<CustomerDto>> CreateCustomer(CustomerCreateInput input)
+    {
+        var dto = await _service.CreateCustomer(input);
+        return CreatedAtAction(nameof(Customer), new { id = dto.Id }, dto);
+    }
+
+    [HttpDelete("{id}/feedbacks")]
+    public async Task<IActionResult> DisconnectCustomer(string id, [Required] string FeedbackId)
+    {
+        try
+        {
+            await _service.DisconnectFeedback(id, CustomerId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}/serviceRequests")]
+    public async Task<IActionResult> DisconnectCustomer(
+        string id,
+        [Required] string ServiceRequestId
+    )
+    {
+        try
+        {
+            await _service.DisconnectServiceRequest(id, CustomerId);
         }
         catch (NotFoundException)
         {
