@@ -21,6 +21,7 @@ public static class CustomersExtensions
             Address = model.Address,
             NewField = model.NewField,
             Nn = model.Nn,
+            Phone_2 = model.Phone_2,
         };
     }
 }
