@@ -15,6 +15,7 @@ public static class FeedbacksExtensions
             Content = model.Content,
             Rating = model.Rating,
             Customers = model.Customers.Select(x => x.ToDto()).ToList(),
+            Comment = model.Comment,
         };
     }
 }

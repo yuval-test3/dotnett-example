@@ -6,4 +6,5 @@ public class FeedbackCreateInput
     public string? Content { get; set; }
     public string? Rating { get; set; }
     public CustomerDto CustomerId { get; set; }
+    public string? Comment { get; set; }
 }

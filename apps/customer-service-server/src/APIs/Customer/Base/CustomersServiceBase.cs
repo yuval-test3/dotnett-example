@@ -23,116 +23,6 @@ public abstract class CustomersServiceBase : ICustomersService
         return _context.Customers.Any(e => e.Id == id);
     }
 
-    public async Task<CustomerDto> CreateCustomer(CustomerCreateInput inputDto)
-    {
-        var model = new Customer { Id = inputDto.Id, Name = inputDto.Name, };
-        _context.customers.Add(model);
-        await _context.SaveChangesAsync();
-
-        var result = await _context.FindAsync<Customer>(model.Id);
-
-        if (result == null)
-        {
-            throw new NotFoundException();
-        }
-
-        return result.ToDto();
-    }
-
-    public async Task ConnectFeedback(string id, [Required] string feedbackId)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var feedback = await _context.feedbacks.FindAsync(feedbackId);
-        if (feedback == null)
-        {
-            throw new NotFoundException();
-        }
-
-        customer.feedbacks.Add(feedback);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task ConnectServiceRequest(string id, [Required] string serviceRequestId)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var serviceRequest = await _context.serviceRequests.FindAsync(serviceRequestId);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        customer.serviceRequests.Add(serviceRequest);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DisconnectFeedback(string id, [Required] string feedbackId)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var feedback = await _context.feedbacks.FindAsync(feedbackId);
-        if (feedback == null)
-        {
-            throw new NotFoundException();
-        }
-
-        customer.feedbacks.Remove(feedback);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DisconnectServiceRequest(string id, [Required] string serviceRequestId)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        var serviceRequest = await _context.serviceRequests.FindAsync(serviceRequestId);
-        if (serviceRequest == null)
-        {
-            throw new NotFoundException();
-        }
-
-        customer.serviceRequests.Remove(serviceRequest);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<IEnumerable<FeedbackDto>> Feedbacks(string id)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        return customer.Feedbacks.Select(feedback => feedback.ToDto()).ToList();
-    }
-
-    public async Task<IEnumerable<ServiceRequestDto>> ServiceRequests(string id)
-    {
-        var customer = await _context.customers.FindAsync(id);
-        if (customer == null)
-        {
-            throw new NotFoundException();
-        }
-
-        return customer.ServiceRequests.Select(serviceRequest => serviceRequest.ToDto()).ToList();
-    }
-
     public async Task UpdateFeedbacks(CustomerIdDto idDto, FeedbackIdDto[] feedbacksId)
     {
         var customer = await _context
@@ -193,6 +83,28 @@ public abstract class CustomersServiceBase : ICustomersService
         await _context.SaveChangesAsync();
     }
 
+    public async Task<IEnumerable<FeedbackDto>> Feedbacks(string id)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        return customer.Feedbacks.Select(feedback => feedback.ToDto()).ToList();
+    }
+
+    public async Task<IEnumerable<ServiceRequestDto>> ServiceRequests(string id)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        return customer.ServiceRequests.Select(serviceRequest => serviceRequest.ToDto()).ToList();
+    }
+
     public async Task<IEnumerable<CustomerDto>> customers(CustomerFindMany findManyArgs)
     {
         var customers = await _context
@@ -203,6 +115,42 @@ public abstract class CustomersServiceBase : ICustomersService
             .ToListAsync();
 
         return customers.ConvertAll(customer => customer.ToDto());
+    }
+
+    public async Task ConnectFeedback(string id, [Required] string feedbackId)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var feedback = await _context.feedbacks.FindAsync(feedbackId);
+        if (feedback == null)
+        {
+            throw new NotFoundException();
+        }
+
+        customer.feedbacks.Add(feedback);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task ConnectServiceRequest(string id, [Required] string serviceRequestId)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var serviceRequest = await _context.serviceRequests.FindAsync(serviceRequestId);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        customer.serviceRequests.Add(serviceRequest);
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateCustomer(string id, CustomerDto customerDto)
@@ -226,5 +174,57 @@ public abstract class CustomersServiceBase : ICustomersService
                 throw;
             }
         }
+    }
+
+    public async Task<CustomerDto> CreateCustomer(CustomerCreateInput inputDto)
+    {
+        var model = new Customer { Id = inputDto.Id, Name = inputDto.Name, };
+        _context.customers.Add(model);
+        await _context.SaveChangesAsync();
+
+        var result = await _context.FindAsync<Customer>(model.Id);
+
+        if (result == null)
+        {
+            throw new NotFoundException();
+        }
+
+        return result.ToDto();
+    }
+
+    public async Task DisconnectFeedback(string id, [Required] string feedbackId)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var feedback = await _context.feedbacks.FindAsync(feedbackId);
+        if (feedback == null)
+        {
+            throw new NotFoundException();
+        }
+
+        customer.feedbacks.Remove(feedback);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DisconnectServiceRequest(string id, [Required] string serviceRequestId)
+    {
+        var customer = await _context.customers.FindAsync(id);
+        if (customer == null)
+        {
+            throw new NotFoundException();
+        }
+
+        var serviceRequest = await _context.serviceRequests.FindAsync(serviceRequestId);
+        if (serviceRequest == null)
+        {
+            throw new NotFoundException();
+        }
+
+        customer.serviceRequests.Remove(serviceRequest);
+        await _context.SaveChangesAsync();
     }
 }

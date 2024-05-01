@@ -16,45 +16,20 @@ public class ServiceRequestsControllerBase : ControllerBase
         _service = service;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<ServiceRequestDto>> CreateServiceRequest(
-        ServiceRequestCreateInput input
-    )
-    {
-        var dto = await _service.CreateServiceRequest(input);
-        return CreatedAtAction(nameof(ServiceRequest), new { id = dto.Id }, dto);
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteServiceRequest(string id)
-    {
-        try
-        {
-            await _service.DeleteServiceRequest(id);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> ServiceRequests()
-    {
-        return Ok(await _service.serviceRequests());
-    }
-
-    [HttpPost("{id}/serviceTickets")]
-    public async Task<IActionResult> ConnectServiceRequest(
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdateServiceRequest(
         string id,
-        [Required] string ServiceTicketId
+        ServiceRequestDto serviceRequestDto
     )
     {
+        if (id != serviceRequestDto.Id)
+        {
+            return BadRequest();
+        }
+
         try
         {
-            await _service.ConnectServiceTicket(id, ServiceRequestId);
+            await _service.UpdateServiceRequest(id, serviceRequestDto);
         }
         catch (NotFoundException)
         {
@@ -62,83 +37,6 @@ public class ServiceRequestsControllerBase : ControllerBase
         }
 
         return NoContent();
-    }
-
-    [HttpPost("{id}/customers")]
-    public async Task<IActionResult> ConnectServiceRequest(string id, [Required] string CustomerId)
-    {
-        try
-        {
-            await _service.ConnectCustomer(id, ServiceRequestId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}/serviceTickets")]
-    public async Task<IActionResult> DisconnectServiceRequest(
-        string id,
-        [Required] string ServiceTicketId
-    )
-    {
-        try
-        {
-            await _service.DisconnectServiceTicket(id, ServiceRequestId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("{id}/customers")]
-    public async Task<IActionResult> DisconnectServiceRequest(
-        string id,
-        [Required] string CustomerId
-    )
-    {
-        try
-        {
-            await _service.DisconnectCustomer(id, ServiceRequestId);
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [HttpGet("{id}/serviceTickets")]
-    public async Task<IActionResult> ServiceTickets(string id)
-    {
-        try
-        {
-            return Ok(await _service.ServiceTickets(id));
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
-    }
-
-    [HttpGet("{id}/customers")]
-    public async Task<IActionResult> Customers(string id)
-    {
-        try
-        {
-            return Ok(await _service.Customers(id));
-        }
-        catch (NotFoundException)
-        {
-            return NotFound();
-        }
     }
 
     [HttpPatch("{id}/serviceTickets")]
@@ -177,20 +75,24 @@ public class ServiceRequestsControllerBase : ControllerBase
         return NoContent();
     }
 
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateServiceRequest(
-        string id,
-        ServiceRequestDto serviceRequestDto
+    [HttpPost]
+    public async Task<ActionResult<ServiceRequestDto>> CreateServiceRequest(
+        ServiceRequestCreateInput input
     )
     {
-        if (id != serviceRequestDto.Id)
-        {
-            return BadRequest();
-        }
+        var dto = await _service.CreateServiceRequest(input);
+        return CreatedAtAction(nameof(ServiceRequest), new { id = dto.Id }, dto);
+    }
 
+    [HttpDelete("{id}/serviceTickets")]
+    public async Task<IActionResult> DisconnectServiceRequest(
+        string id,
+        [Required] string ServiceTicketId
+    )
+    {
         try
         {
-            await _service.UpdateServiceRequest(id, serviceRequestDto);
+            await _service.DisconnectServiceTicket(id, ServiceRequestId);
         }
         catch (NotFoundException)
         {
@@ -198,5 +100,103 @@ public class ServiceRequestsControllerBase : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [HttpDelete("{id}/customers")]
+    public async Task<IActionResult> DisconnectServiceRequest(
+        string id,
+        [Required] string CustomerId
+    )
+    {
+        try
+        {
+            await _service.DisconnectCustomer(id, ServiceRequestId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ServiceRequestDto>>> ServiceRequests()
+    {
+        return Ok(await _service.serviceRequests());
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteServiceRequest(string id)
+    {
+        try
+        {
+            await _service.DeleteServiceRequest(id);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("{id}/serviceTickets")]
+    public async Task<IActionResult> ConnectServiceRequest(
+        string id,
+        [Required] string ServiceTicketId
+    )
+    {
+        try
+        {
+            await _service.ConnectServiceTicket(id, ServiceRequestId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("{id}/customers")]
+    public async Task<IActionResult> ConnectServiceRequest(string id, [Required] string CustomerId)
+    {
+        try
+        {
+            await _service.ConnectCustomer(id, ServiceRequestId);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpGet("{id}/serviceTickets")]
+    public async Task<IActionResult> ServiceTickets(string id)
+    {
+        try
+        {
+            return Ok(await _service.ServiceTickets(id));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpGet("{id}/customers")]
+    public async Task<IActionResult> Customers(string id)
+    {
+        try
+        {
+            return Ok(await _service.Customers(id));
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

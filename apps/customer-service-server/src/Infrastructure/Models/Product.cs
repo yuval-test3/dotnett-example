@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerServiceManagement.Infrastructure.Models;
 
-[Table("Feedbacks")]
-public class Feedback
+[Table("Products")]
+public class Product
 {
     [Key, Required]
     public long Id { get; set; }
@@ -15,14 +15,16 @@ public class Feedback
     [Required]
     public DateTime UpdatedAt { get; set; }
 
-    public string? Content { get; set; }
+    public string? Description { get; set; }
 
-    public string? Rating { get; set; }
+    public decimal? Price { get; set; }
 
-    public string CustomerId { get; set; }
+    public string? Name { get; set; }
 
-    [ForeignKey(nameof(CustomerId))]
-    public Customer? Customer { get; set; }
+    public string? InStock { get; set; }
 
-    public string? Comment { get; set; }
+    public string OrderId { get; set; }
+
+    [ForeignKey(nameof(OrderId))]
+    public Order? Order { get; set; }
 }
